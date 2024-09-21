@@ -92,6 +92,24 @@ export class Column extends Group {
     // Our height is set to the height determined by stacking our children vertically.
     protected override _doLocalSizing() : void {
         //=== YOUR CODE HERE ===
+        var sumMinsH = 0;
+        var sumNatsH = 0;
+        var sumMaxsH = 0;
+        for (let child of this.children) {
+            sumMinsH += child.minH;
+            sumNatsH += child.naturalH;
+            sumMaxsH += child.maxH;
+        }
+        this.minH = sumMinsH;
+        this.naturalH = sumNatsH;
+        this.maxH = sumMaxsH;
+
+        for (let child of this.children) {
+            this.minW = Math.max(this.minW, child.minW);
+            this.naturalW = Math.max(this.naturalW, child.naturalW);
+            this.maxW = Math.max(this.maxW, child.maxW);
+        }
+        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -156,6 +174,14 @@ export class Column extends Group {
         let numSprings = 0; 
 
         //=== YOUR CODE HERE ===
+        for (let child of this.children) {
+            if (child instanceof Spring) {
+                numSprings++;
+            } else {
+                natSum += child.naturalH;
+                availCompr += child.naturalH - child.minH;
+            }
+        }
 
         return [natSum, availCompr, numSprings];
     }
@@ -168,6 +194,19 @@ export class Column extends Group {
     // the space at the bottom of the column as a fallback strategy).
     protected _expandChildSprings(excess : number, numSprings : number) : void {
         //=== YOUR CODE HERE ===
+        if(numSprings === 0){
+            return;
+        }
+
+        var perSpring = excess / numSprings;
+
+        for (let child of this.children) {
+            if (child instanceof Spring) {
+                child.h += perSpring;
+            }
+        }
+
+        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -188,7 +227,14 @@ export class Column extends Group {
         // from the natural height of that child, to get the assigned height.
         for (let child of this.children) {
             //=== YOUR CODE HERE ===
+            if (child instanceof Spring) continue;
+            else{
+                let frac = child.naturalH - child.minH;
+                frac /= availCompr;
+                child.h = child.naturalH - (frac * shortfall);
+            }
         }
+        this.damageAll();
 }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -232,6 +278,16 @@ export class Column extends Group {
         // apply our justification setting for the horizontal
         
         //=== YOUR CODE HERE ===
+        for (let child of this.children) {
+            if (this.wJustification === 'center') {
+                child.x = (this.w - child.w) / 2;
+            } else if (this.wJustification === 'right') {
+                child.x = this.w - child.w;
+            } else {
+                child.x = 0;
+            }
+        }
+        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

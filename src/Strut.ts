@@ -29,11 +29,19 @@ export class Strut extends DrawnObjectBase {
     public override get w() {return super.w;}  
     public override set w(v : number) {
         //=== YOUR CODE HERE ===
+        if (v !== super.w) {
+            super.w = v;
+            this.damageAll();
+       }
     }
 
     public override get h() {return super.h;}
     public override set h(v : number) {
         //=== YOUR CODE HERE ===
+        if (v !== super.h) {
+            super.h = v;
+            this.damageAll();
+       }
     }
 
 
