@@ -158,7 +158,7 @@ export class TopObject extends DrawnObjectBase {
                 // clip to our bounds
                 
                 //=== YOUR CODE HERE ===
-                this.applyClip(this.canvasContext, this._x, this._y, this._w, this._h);
+                this.applyClip(this.canvasContext, 0, 0, this._w, this._h);
 
                 // within our bounds clip to just the damaged region
                 

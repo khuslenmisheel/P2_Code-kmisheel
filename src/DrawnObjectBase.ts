@@ -537,7 +537,9 @@ export class DrawnObjectBase {
         //=== YOUR CODE HERE ===
         var child = this.children[childIndx];
         ctx.translate(child.x, child.y);
-        this.applyClip(ctx, 0, 0, child.w, child.h);
+        child.x = 0;
+        child.y = 0;
+        this.applyClip(ctx, child.x, child.y, child.w, child.h);
     }
 
     
@@ -692,7 +694,7 @@ export class DrawnObjectBase {
                                wv : number, hv: number) : void 
     {
             //=== YOUR CODE HERE ===
-            var localX = child.x + xInChildCoords;
+            var localX = child.x - xInChildCoords;
             var localY = child.y + yInChildCoords;
             if (this.parent) {
                 this.parent._damageFromChild(this, localX, localY, wv, hv);
