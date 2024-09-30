@@ -86,7 +86,6 @@ export class FilledObject extends DrawnObjectBase {
         
         //=== YOUR CODE HERE ===
         ctx.fillRect(0, 0, this.w, this.h);
-        //this.damageAll();
 
     }
 

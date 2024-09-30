@@ -540,7 +540,6 @@ export class DrawnObjectBase {
     protected _startChildDraw(childIndx : number, ctx: DrawContext) {
         // save the state of the context object on its internal stack
         ctx.save();
-
         //=== YOUR CODE HERE ===
         var child = this.children[childIndx];
         ctx.translate(child.x, child.y);
@@ -701,7 +700,9 @@ export class DrawnObjectBase {
             //=== YOUR CODE HERE ===
             var localX = child.x + xInChildCoords;
             var localY = child.y + yInChildCoords;
-            this.damageArea(localX, localY, wv, hv);
+            if (this.parent) {
+                this.parent._damageFromChild(this, localX, localY, wv, hv);
+            }
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
