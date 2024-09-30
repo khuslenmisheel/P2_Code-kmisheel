@@ -87,8 +87,10 @@ export class IconObject extends DrawnObjectBase {
     public get resizesImage() {return this._resizesImage;}
     public set resizesImage(v : boolean) {
         //=== YOUR CODE HERE ===
-        if (v !== this._resizesImage) {
+        if (!(v === this._resizesImage)) {
+            this.damageAll();
             this._resizesImage = v;
+            this._resize();
             this.damageAll();
         }
     }
@@ -100,11 +102,11 @@ export class IconObject extends DrawnObjectBase {
     // If our size is determined by the image, resize us to match (otherwise do nothing).
     protected _resize() {
         //=== YOUR CODE HERE ===
-        if (this._resizesImage && this.image && this.image.canvasImage && this.image.loaded) {
-            this.w = this.image.canvasImage.width
-            this.h = this.image.canvasImage.height;
-            this.damageAll();
+        if (!(this._resizesImage) && this._image && this._image.canvasImage) {
+            var img = this._image.canvasImage;
+            this.size = {w: img.width, h: img.height}
         }
+
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -132,15 +134,12 @@ export class IconObject extends DrawnObjectBase {
         // if we don't have an image bail out
         if (!this.image || !this.image.canvasImage) return;
 
-        if (!this.resizesImage) {
+        if (this.resizesImage) {
             //=== YOUR CODE HERE ===
-            ctx.beginPath();
-            ctx.rect(0, 0, this.w, this.h);
-            ctx.clip();
-            ctx.drawImage(this.image.canvasImage, 0, 0);
+            ctx.drawImage(this.image.canvasImage, 0, 0, this.w, this.h);
         } else {
             //=== YOUR CODE HERE ===
-            ctx.drawImage(this.image.canvasImage, 0, 0);
+            ctx.drawImage(this.image.canvasImage, 0, 0, this.image.canvasImage.width, this.image.canvasImage.height);
         }
     }
 

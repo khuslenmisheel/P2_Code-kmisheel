@@ -36,7 +36,8 @@ export class TextObject extends DrawnObjectBase {
     public get text() {return this._text;}
     public set text(v : string) {
         //=== YOUR CODE HERE ===
-        if (v !== this._text) {
+        if (!(v === this._text)){
+            this.damageAll();
             this._text = v;
             this.damageAll();
         }
@@ -72,7 +73,8 @@ export class TextObject extends DrawnObjectBase {
     public get font() {return this._font;}
     public set font(v : string) {
         //=== YOUR CODE HERE ===
-        if (v !== this._font) {
+        if (!(v === this._font)) {
+            this.damageAll();
             this._font = v;
             this.damageAll();
         }
@@ -88,7 +90,8 @@ export class TextObject extends DrawnObjectBase {
     public set padding(v : SizeLiteral | number) {
         if (typeof v === 'number') v = {w:v, h:v};
         //=== YOUR CODE HERE ===
-        if (v.w !== this._padding.w || v.h !== this._padding.h) {
+        if (!(this._padding == v)) {
+            this.damageAll();
             this._padding = v;
             this.damageAll();
         }
@@ -119,21 +122,16 @@ export class TextObject extends DrawnObjectBase {
     // Recalculate the size of this object based on the size of the text
     protected _recalcSize(ctx? : DrawContext) : void {
         //=== YOUR CODE HERE ===
-        if(ctx === undefined) {
-            return;
-        }
-        ctx.font = this._font;
-
-        var met = this._measureText(this._text, this._font, ctx)
-
-        this.w = met.w + (this._padding.w * 2);
-        this.h = met.h + (this._padding.h * 2);
-
         this.damageAll();
+
+        var met = this._measureText(this._text, this._font, ctx);
+
+        this.size = {w : met.w, h: met.h};
 
         // set the size configuration to be fixed at that size
         this.wConfig = SizeConfig.fixed(this.w);
         this.hConfig = SizeConfig.fixed(this.h);
+        this.damageAll();
     }
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -157,12 +155,14 @@ export class TextObject extends DrawnObjectBase {
             }
             
             //=== YOUR CODE HERE ===
+            var metr = this._measureText(this._text, this._font, ctx);
+            ctx.font = this._font;
             if(this._renderType === 'fill') {
                 ctx.fillStyle = clr;
-                ctx.fillText(this._text, this.x, this.y);
+                ctx.fillText(this._text ,this.padding.w, this.padding.h + metr.baseln, this.maxW);
             } else {
                 ctx.strokeStyle = clr;
-                ctx.strokeText(this._text, this.x, this.y);
+                ctx.strokeText(this._text, this.padding.w, this.padding.h + metr.baseln, this.maxW);
             }
 
         }   finally {

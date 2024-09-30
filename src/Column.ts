@@ -49,7 +49,7 @@ export class Column extends Group {
     protected _wJustification : WJust = 'left';
     public get wJustification() {return this._wJustification;}
     public set wJustification(v : WJust) {
-        if (v !== this._wJustification) {
+        if (!(v === this._wJustification)) {
             this._wJustification = v;
             this.damageAll();  // we have damaged our layout...
         }
@@ -60,7 +60,7 @@ export class Column extends Group {
     // Override h setter so it enforces fixed size
     public override get h() {return super.h;}
     public override set h(v : number) {
-        if (v !== this._h) {
+        if (!(v === this._h)) {
             // damage at old size
             this.damageAll();
             this._h = v;
@@ -95,21 +95,20 @@ export class Column extends Group {
         var sumMinsH = 0;
         var sumNatsH = 0;
         var sumMaxsH = 0;
+        var miniW = 0;
+        var maxyW = 0;
+        var natyW = 0;
         for (let child of this.children) {
             sumMinsH += child.minH;
             sumNatsH += child.naturalH;
             sumMaxsH += child.maxH;
+            miniW = Math.max(this.minW, child.minW);
+            natyW = Math.max(this.naturalW, child.naturalW);
+            maxyW = Math.max(this.maxW, child.maxW);
         }
-        this.minH = sumMinsH;
-        this.naturalH = sumNatsH;
-        this.maxH = sumMaxsH;
+        this.hConfig = new SizeConfig(sumNatsH, sumMinsH, sumMaxsH);
+        this.wConfig = new SizeConfig(natyW, miniW, maxyW);
 
-        for (let child of this.children) {
-            this.minW = Math.max(this.minW, child.minW);
-            this.naturalW = Math.max(this.naturalW, child.naturalW);
-            this.maxW = Math.max(this.maxW, child.maxW);
-        }
-        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -179,7 +178,7 @@ export class Column extends Group {
                 numSprings++;
             } else {
                 natSum += child.naturalH;
-                availCompr += child.naturalH - child.minH;
+                availCompr += (child.naturalH - child.minH);
             }
         }
 
@@ -202,11 +201,10 @@ export class Column extends Group {
 
         for (let child of this.children) {
             if (child instanceof Spring) {
-                child.h += perSpring;
+                child.h = perSpring;
             }
         }
 
-        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -231,11 +229,10 @@ export class Column extends Group {
             else{
                 let frac = child.naturalH - child.minH;
                 frac /= availCompr;
-                child.h = child.naturalH - (frac * shortfall);
+                child.h = Math.max(child.minH, child.naturalH - (frac * shortfall));
             }
         }
-        this.damageAll();
-}
+    }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
@@ -287,7 +284,6 @@ export class Column extends Group {
                 child.x = 0;
             }
         }
-        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

@@ -74,8 +74,8 @@ export class DrawnObjectBase {
 
    //-------------------------------------------------------------------
 
-    public constructor(  
-        x : number = 0,      // x position in parent coordinate system 
+    public constructor(
+        x : number = 0,      // x position in parent coordinate system
         y: number = 0,       // y position in parent coordinate system 
         w: number = 42,      // initial width
         h: number = 13,      // initial height
@@ -107,12 +107,13 @@ export class DrawnObjectBase {
     protected _x : number = 0;
     public get x() : number {return this._x;}  
     public set x(v : number) {
-        if (v !== this._x) {
+        if (!(v === this._x)) {
 
              // don't forget to declare damage whenever something changes
              // that could affect the display
 
             //=== YOUR CODE HERE ===
+            this.damageAll();
             this._x = v;
             this.damageAll();
         }
@@ -124,7 +125,8 @@ export class DrawnObjectBase {
     public get y() : number {return this._y;}
     public set y(v : number) {
         //=== YOUR CODE HERE ===
-        if (v !== this._y) {
+        if (!(v === this._y)) {
+            this.damageAll();
             this._y = v;
             this.damageAll();
        }
@@ -146,7 +148,8 @@ export class DrawnObjectBase {
     public get w() : number {return this._w;}
     public set w(v : number) {
             //=== YOUR CODE HERE ===
-            if (v !== this._w) {
+            if (!(v === this._w)) {
+                this.damageAll();
                 this._w = v;
                 this.damageAll();
            }
@@ -159,7 +162,8 @@ export class DrawnObjectBase {
     public get wConfig() : SizeConfigLiteral {return this._wConfig;}
     public set wConfig(v : SizeConfigLiteral) {
         //=== YOUR CODE HERE ===
-        if(v !== this.wConfig){
+        if(!(this._wConfig === v)) {
+            this.damageAll();
             this._wConfig = v;
             this.damageAll();
         }
@@ -188,7 +192,8 @@ export class DrawnObjectBase {
     public get h() : number {return this._h;}
     public set h(v : number) {
         //=== YOUR CODE HERE ===
-        if (v !== this._h) {
+        if (!(v === this._h)) {
+            this.damageAll();
             this._h = v;
             this.damageAll();
        }
@@ -201,7 +206,8 @@ export class DrawnObjectBase {
     public get hConfig() : SizeConfigLiteral {return this._hConfig;}
     public set hConfig(v : SizeConfigLiteral) {
         //=== YOUR CODE HERE ===
-        if(v !== this.hConfig){
+        if(!(this._hConfig === v)) {
+            this.damageAll();
             this._hConfig = v;
             this.damageAll();
         }
@@ -238,9 +244,9 @@ export class DrawnObjectBase {
     public get visible() : boolean {return this._visible;}
     public set visible(v : boolean) {
             //=== YOUR CODE HERE ===
-            if (v !== this._visible) {
-                this._visible = v;
+            if (!(v === this._visible)) {
                 this.damageAll();
+                this._visible = v;
             }
     }
 
@@ -470,6 +476,7 @@ export class DrawnObjectBase {
         ctx.beginPath();
         ctx.rect(clipx, clipy, clipw, cliph);
         ctx.clip();
+        ctx.closePath();
     }
 
     // Utility routine to create a new rectangular path at our bounding box.
@@ -537,9 +544,7 @@ export class DrawnObjectBase {
         //=== YOUR CODE HERE ===
         var child = this.children[childIndx];
         ctx.translate(child.x, child.y);
-        child.x = 0;
-        child.y = 0;
-        this.applyClip(ctx, child.x, child.y, child.w, child.h);
+        this.applyClip(ctx, 0, 0, child.w, child.h);
     }
 
     
@@ -694,11 +699,9 @@ export class DrawnObjectBase {
                                wv : number, hv: number) : void 
     {
             //=== YOUR CODE HERE ===
-            var localX = child.x - xInChildCoords;
+            var localX = child.x + xInChildCoords;
             var localY = child.y + yInChildCoords;
-            if (this.parent) {
-                this.parent._damageFromChild(this, localX, localY, wv, hv);
-            }
+            this.damageArea(localX, localY, wv, hv);
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

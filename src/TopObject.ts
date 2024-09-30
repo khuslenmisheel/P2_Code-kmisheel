@@ -158,7 +158,7 @@ export class TopObject extends DrawnObjectBase {
                 // clip to our bounds
                 
                 //=== YOUR CODE HERE ===
-                this.applyClip(this.canvasContext, 0, 0, this._w, this._h);
+                this.applyClip(this.canvasContext, 0, 0, this.w, this.h);
 
                 // within our bounds clip to just the damaged region
                 
@@ -175,7 +175,6 @@ export class TopObject extends DrawnObjectBase {
                 
                 //=== YOUR CODE HERE ===
                 this.draw(this.canvasContext);
-
             } catch(err) {
                 // catch any exception thrown and echo the message, but then 
                 // use Err to decide how we continue (by default we print a 
@@ -207,11 +206,21 @@ export class TopObject extends DrawnObjectBase {
     // damage instead of passing it up the tree (since there is no up  from here).
     public override damageArea(xv: number, yv: number, wv: number, hv: number): void {
         //=== YOUR CODE HERE ===
-        this._damageRectX = xv;
-        this._damageRectY = yv;
-        this._damageRectW = wv;
-        this._damageRectH = hv;
-        this._damaged = true;
+        xv = Math.max(0, xv);
+        yv = Math.max(0, yv);
+        if(this._damaged){
+            this._damageRectX = Math.min(this.x, xv);
+            this._damageRectY = Math.min(this.y, yv);
+            this._damageRectW = Math.max(this.w, wv);
+            this._damageRectH = Math.max(this.h, hv);
+        }
+        else{
+            this._damageRectX = xv;
+            this._damageRectY = yv;
+            this._damageRectW = wv;
+            this._damageRectH = hv;
+        }
+        
     }
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  

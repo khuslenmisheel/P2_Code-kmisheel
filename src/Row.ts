@@ -49,7 +49,7 @@ export class Row extends Group {
     protected _hJustification : HJust = 'top';
     public get hJustification() {return this._hJustification;}
     public set hJustification(v : HJust) {
-        if (v !== this._hJustification) {
+        if (!(v === this._hJustification)) {
             this._hJustification = v;
             this.damageAll();  // we have damaged our layout...
         }
@@ -60,7 +60,7 @@ export class Row extends Group {
     // Override w setter so it enforces fixed size
     public override get w() {return super.w;}
     public override set w(v : number) {
-        if (v !== this._w) {
+        if (!(v === this._w)) {
             // damage at old size
             this.damageAll();
             this._w = v;
@@ -96,20 +96,21 @@ export class Row extends Group {
         var sumNatsW = 0;
         var sumMaxsW = 0;
         for (let child of this.children) {
-            sumMinsW += child.minH;
-            sumNatsW += child.naturalH;
-            sumMaxsW += child.maxH;
+            sumMinsW += child.minW;
+            sumNatsW += child.naturalW;
+            sumMaxsW += child.maxW;
         }
-        this.minW = sumMinsW;
-        this.naturalW = sumNatsW;
-        this.maxW = sumMaxsW;
+        this._wConfig = new SizeConfig(sumNatsW, sumMinsW, sumMaxsW);
+        var minumH = 0;
+        var nattyH = 0
+        var maximH = 0;
 
         for (let child of this.children) {
-            this.minH = Math.max(this.minW, child.minW);
-            this.naturalH = Math.max(this.naturalW, child.naturalW);
-            this.maxH = Math.max(this.maxW, child.maxW);
+            minumH = Math.max(this.minH, child.minH);
+            nattyH = Math.max(this.naturalH, child.naturalH);
+            maximH = Math.max(this.maxH, child.maxH);
         }
-        this.damageAll();
+        this._hConfig = new SizeConfig(nattyH, minumH, maximH);
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -179,7 +180,7 @@ export class Row extends Group {
                 numSprings++;
             } else {
                 natSum += child.naturalW;
-                availCompr += child.naturalW - child.minW;
+                availCompr += (child.naturalW - child.minW);
             }
         }
 
@@ -202,11 +203,10 @@ export class Row extends Group {
 
         for (let child of this.children) {
             if (child instanceof Spring) {
-                child.w += perSpring;
+                child.w = perSpring;
             }
         }
 
-        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -225,17 +225,17 @@ export class Row extends Group {
         // compressabilty across all the children. we calculate the fraction for 
         // each child, then subtract that fraction of the total shortfall 
         // from the natural height of that child, to get the assigned height.
+
         for (let child of this.children) {
             //=== YOUR CODE HERE ===
             if (child instanceof Spring) continue;
             else{
-                let frac = child.naturalW - child.minW;
-                frac /= availCompr;
-                child.h = child.naturalW - (frac * shortfall);
+                let frac = child.naturalH - child.minH;
+                var f = frac / availCompr;
+                child.w = Math.max(child.minW, child.naturalW - (f * shortfall));
             }
         }
-        this.damageAll();
-}
+    }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
@@ -280,12 +280,13 @@ export class Row extends Group {
         //=== YOUR CODE HERE ===
         for (let child of this.children) {
             if (this.hJustification === 'bottom') {
-                child.x = (this.h - child.h) / 2;
+                child.y = this.h - child.h;
+            } else if (this.hJustification === 'center') {
+                child.y = (this.h - child.h) /2;
             } else {
-                child.x = 0;
+                child.y = 0;
             }
         }
-        this.damageAll();
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
