@@ -29,6 +29,7 @@ export class Spring extends DrawnObjectBase {
     public override get w() {return super.w;}  
     public override set w(v : number) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting variable
         this.damageAll();
         super.w = v;
         super.wConfig = SizeConfig.elastic(v);
@@ -39,6 +40,7 @@ export class Spring extends DrawnObjectBase {
     public override get h() {return super.h;}
     public override set h(v : number) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting variable
         this.damageAll();
         super.h = v;
         super.hConfig = SizeConfig.elastic(v);

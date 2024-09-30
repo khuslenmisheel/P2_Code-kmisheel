@@ -67,7 +67,7 @@ import { SizeConfig } from "./SizeConfig.js";
 // used here to get a drawing context to measure text with
 export class DrawnObjectBase {
     //-------------------------------------------------------------------
-    constructor(x = 0, // x position in parent coordinate system 
+    constructor(x = 0, // x position in parent coordinate system
     y = 0, // y position in parent coordinate system 
     w = 42, // initial width
     h = 13, // initial height
@@ -134,15 +134,25 @@ export class DrawnObjectBase {
     }
     get x() { return this._x; }
     set x(v) {
-        if (v !== this.x) {
+        if (!(v === this._x)) {
             // don't forget to declare damage whenever something changes
             // that could affect the display
             //=== YOUR CODE HERE ===
+            //Damage before and after setting our x variable
+            this.damageAll();
+            this._x = v;
+            this.damageAll();
         }
     }
     get y() { return this._y; }
     set y(v) {
         //=== YOUR CODE HERE ===
+        if (!(v === this._y)) {
+            //Damage before and after setting our y variable
+            this.damageAll();
+            this._y = v;
+            this.damageAll();
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // x,y position of this object in parent coordinates 
@@ -155,10 +165,22 @@ export class DrawnObjectBase {
     get w() { return this._w; }
     set w(v) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our w variable
+        if (!(v === this._w)) {
+            this.damageAll();
+            this._w = v;
+            this.damageAll();
+        }
     }
     get wConfig() { return this._wConfig; }
     set wConfig(v) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our wConfig variable
+        if (!(this._wConfig === v)) {
+            this.damageAll();
+            this._wConfig = v;
+            this.damageAll();
+        }
     }
     get naturalW() { return this._wConfig.nat; }
     set naturalW(v) {
@@ -177,10 +199,22 @@ export class DrawnObjectBase {
     get h() { return this._h; }
     set h(v) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our h variable
+        if (!(v === this._h)) {
+            this.damageAll();
+            this._h = v;
+            this.damageAll();
+        }
     }
     get hConfig() { return this._hConfig; }
     set hConfig(v) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our hConfig variable
+        if (!(this._hConfig === v)) {
+            this.damageAll();
+            this._hConfig = v;
+            this.damageAll();
+        }
     }
     get naturalH() { return this._hConfig.nat; }
     set naturalH(v) {
@@ -205,6 +239,11 @@ export class DrawnObjectBase {
     get visible() { return this._visible; }
     set visible(v) {
         //=== YOUR CODE HERE ===
+        //Damage after setting our visible variable
+        if (!(v === this._visible)) {
+            this._visible = v;
+            this.damageAll();
+        }
     }
     get parent() { return this._parent; }
     // Find the root display object at the top of the tree this object is installed in.
@@ -383,6 +422,11 @@ export class DrawnObjectBase {
     // area and the given rectangle.
     applyClip(ctx, clipx, clipy, clipw, cliph) {
         //=== YOUR CODE HERE ===
+        //Create a rectangle so we can clip according to the given specs
+        ctx.beginPath();
+        ctx.rect(clipx, clipy, clipw, cliph);
+        ctx.clip();
+        ctx.closePath();
     }
     // Utility routine to create a new rectangular path at our bounding box.
     makeBoundingBoxPath(ctx) {
@@ -441,6 +485,10 @@ export class DrawnObjectBase {
         // save the state of the context object on its internal stack
         ctx.save();
         //=== YOUR CODE HERE ===
+        //Translate our child coordinates
+        var child = this.children[childIndx];
+        ctx.translate(child.x, child.y);
+        this.applyClip(ctx, 0, 0, child.w, child.h);
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // Internal method to restore the given drawing context after drawing the 
@@ -554,6 +602,10 @@ export class DrawnObjectBase {
     // our parent.
     damageArea(xv, yv, wv, hv) {
         //=== YOUR CODE HERE ===
+        //Pass the damage up the tree to the parent
+        if (this.parent) {
+            this.parent._damageFromChild(this, xv, yv, wv, hv);
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // Declare that the entire bounding box has been damaged.  This is the typical 
@@ -571,6 +623,13 @@ export class DrawnObjectBase {
     // limited to our bounds by clipping.
     _damageFromChild(child, xInChildCoords, yInChildCoords, wv, hv) {
         //=== YOUR CODE HERE ===
+        //Change our variables to parent coordinates
+        var localX = child.x + xInChildCoords;
+        var localY = child.y + yInChildCoords;
+        //Propogate the damage up
+        if (this.parent) {
+            this.parent._damageFromChild(this, localX, localY, wv, hv);
+        }
     }
     get debugID() { return this._debugID; }
     static _genDebugID() { return DrawnObjectBase._nextDebugID++; }

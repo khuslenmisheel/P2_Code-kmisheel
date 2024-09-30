@@ -113,6 +113,7 @@ export class DrawnObjectBase {
              // that could affect the display
 
             //=== YOUR CODE HERE ===
+            //Damage before and after setting our x variable
             this.damageAll();
             this._x = v;
             this.damageAll();
@@ -126,6 +127,7 @@ export class DrawnObjectBase {
     public set y(v : number) {
         //=== YOUR CODE HERE ===
         if (!(v === this._y)) {
+            //Damage before and after setting our y variable
             this.damageAll();
             this._y = v;
             this.damageAll();
@@ -148,6 +150,7 @@ export class DrawnObjectBase {
     public get w() : number {return this._w;}
     public set w(v : number) {
             //=== YOUR CODE HERE ===
+            //Damage before and after setting our w variable
             if (!(v === this._w)) {
                 this.damageAll();
                 this._w = v;
@@ -162,6 +165,7 @@ export class DrawnObjectBase {
     public get wConfig() : SizeConfigLiteral {return this._wConfig;}
     public set wConfig(v : SizeConfigLiteral) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our wConfig variable
         if(!(this._wConfig === v)) {
             this.damageAll();
             this._wConfig = v;
@@ -192,6 +196,7 @@ export class DrawnObjectBase {
     public get h() : number {return this._h;}
     public set h(v : number) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our h variable
         if (!(v === this._h)) {
             this.damageAll();
             this._h = v;
@@ -206,6 +211,7 @@ export class DrawnObjectBase {
     public get hConfig() : SizeConfigLiteral {return this._hConfig;}
     public set hConfig(v : SizeConfigLiteral) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our hConfig variable
         if(!(this._hConfig === v)) {
             this.damageAll();
             this._hConfig = v;
@@ -244,9 +250,10 @@ export class DrawnObjectBase {
     public get visible() : boolean {return this._visible;}
     public set visible(v : boolean) {
             //=== YOUR CODE HERE ===
+            //Damage after setting our visible variable
             if (!(v === this._visible)) {
-                this.damageAll();
                 this._visible = v;
+                this.damageAll();
             }
     }
 
@@ -473,6 +480,7 @@ export class DrawnObjectBase {
                      clipx : number, clipy : number, clipw : number, cliph : number) 
     {
         //=== YOUR CODE HERE ===
+        //Create a rectangle so we can clip according to the given specs
         ctx.beginPath();
         ctx.rect(clipx, clipy, clipw, cliph);
         ctx.clip();
@@ -541,6 +549,7 @@ export class DrawnObjectBase {
         // save the state of the context object on its internal stack
         ctx.save();
         //=== YOUR CODE HERE ===
+        //Translate our child coordinates
         var child = this.children[childIndx];
         ctx.translate(child.x, child.y);
         this.applyClip(ctx, 0, 0, child.w, child.h);
@@ -671,6 +680,7 @@ export class DrawnObjectBase {
     // our parent.
     public damageArea(xv: number, yv : number, wv : number, hv : number) : void {
         //=== YOUR CODE HERE ===
+        //Pass the damage up the tree to the parent
         if (this.parent) {
             this.parent._damageFromChild(this, xv, yv, wv, hv);
         }
@@ -698,8 +708,10 @@ export class DrawnObjectBase {
                                wv : number, hv: number) : void 
     {
             //=== YOUR CODE HERE ===
+            //Change our variables to parent coordinates
             var localX = child.x + xInChildCoords;
             var localY = child.y + yInChildCoords;
+            //Propogate the damage up
             if (this.parent) {
                 this.parent._damageFromChild(this, localX, localY, wv, hv);
             }

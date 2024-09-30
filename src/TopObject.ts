@@ -98,6 +98,7 @@ export class TopObject extends DrawnObjectBase {
     // For this object we clear the canvas behind the children that we draw
     protected override _drawSelfOnly(ctx: CanvasRenderingContext2D): void {
         //=== YOUR CODE HERE ===
+        //Clear the background 
         ctx.clearRect(0, 0, this.w, this.h);
         this.damageAll();
     }
@@ -156,14 +157,13 @@ export class TopObject extends DrawnObjectBase {
                 // we don't have a parent to do the following for us, so we do it 
                 // ourselves...
 
-                // clip to our bounds
                 
                 //=== YOUR CODE HERE ===
+                //Clipping to our bounds
                 this.applyClip(this.canvasContext, 0, 0, this.w, this.h);
 
-                // within our bounds clip to just the damaged region
-                
                 //=== YOUR CODE HERE ===
+                // within our bounds clip to just the damaged region
                 this.applyClip(this.canvasContext, this._damageRectX, this._damageRectY, this._damageRectW, this._damageRectH);
 
                 // after this we will no longer be damaged, so reset our damage tracking
@@ -173,8 +173,6 @@ export class TopObject extends DrawnObjectBase {
                 this._damageRectH = this.h;
 
                 // do the actual drawing from here down the tree
-                
-                //=== YOUR CODE HERE ===
                 this.draw(this.canvasContext);
             } catch(err) {
                 // catch any exception thrown and echo the message, but then 
@@ -206,11 +204,15 @@ export class TopObject extends DrawnObjectBase {
     // Override the routine that declares damage for this object to record the 
     // damage instead of passing it up the tree (since there is no up  from here).
     public override damageArea(xv: number, yv: number, wv: number, hv: number): void {
-        //=== YOUR CODE HERE ===
+        // Store the x-coordinate of the damaged area
         this._damageRectX = xv;
+        // Store the y-coordinate of the damaged area
         this._damageRectY = yv;
+        // Store the width of the damaged area
         this._damageRectW = wv;
+        // Store the height of the damaged area
         this._damageRectH = hv;
+        // Set the damaged flag to true, indicating that this object needs redrawing
         this._damaged = true;
     }
     

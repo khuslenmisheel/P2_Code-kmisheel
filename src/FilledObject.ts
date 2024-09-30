@@ -28,6 +28,7 @@ export class FilledObject extends DrawnObjectBase {
     public override get w() {return super.w;}  
     public override set w(v : number) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our w and wConfig variable
         if(!(this._w === v)){
             this.damageAll();
             this._w = v
@@ -39,6 +40,7 @@ export class FilledObject extends DrawnObjectBase {
     public override get h() {return super.h;}
     public override set h(v : number) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our h and wConfig variable
         if(!(this._h === v)){
             this.damageAll();
             this._h = v
@@ -85,6 +87,7 @@ export class FilledObject extends DrawnObjectBase {
         }
         
         //=== YOUR CODE HERE ===
+        //Just draw the rectangle with our set variables
         ctx.fillRect(0, 0, this.w, this.h);
 
     }

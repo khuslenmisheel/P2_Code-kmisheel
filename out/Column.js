@@ -39,7 +39,7 @@ export class Column extends Group {
     }
     get wJustification() { return this._wJustification; }
     set wJustification(v) {
-        if (v !== this._wJustification) {
+        if (!(v === this._wJustification)) {
             this._wJustification = v;
             this.damageAll(); // we have damaged our layout...
         }
@@ -48,7 +48,7 @@ export class Column extends Group {
     // Override h setter so it enforces fixed size
     get h() { return super.h; }
     set h(v) {
-        if (v !== this._h) {
+        if (!(v === this._h)) {
             // damage at old size
             this.damageAll();
             this._h = v;
@@ -78,6 +78,22 @@ export class Column extends Group {
     // Our height is set to the height determined by stacking our children vertically.
     _doLocalSizing() {
         //=== YOUR CODE HERE ===
+        var sumMinsH = 0;
+        var sumNatsH = 0;
+        var sumMaxsH = 0;
+        var miniW = 0;
+        var maxyW = 0;
+        var natyW = 0;
+        for (let child of this.children) {
+            sumMinsH += child.minH;
+            sumNatsH += child.naturalH;
+            sumMaxsH += child.maxH;
+            miniW = Math.max(miniW, child.minW);
+            natyW = Math.max(natyW, child.naturalW);
+            maxyW = Math.max(maxyW, child.maxW);
+        }
+        this.hConfig = new SizeConfig(sumNatsH, sumMinsH, sumMaxsH);
+        this.wConfig = new SizeConfig(natyW, miniW, maxyW);
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // This method adjusts the height of the children to do vertical springs and struts 
@@ -134,7 +150,18 @@ export class Column extends Group {
         let natSum = 0;
         let availCompr = 0;
         let numSprings = 0;
-        //=== YOUR CODE HERE ===
+        //Go through each of the children        
+        for (let child of this.children) {
+            //For each children if it's a spring just increment
+            if (child instanceof Spring) {
+                numSprings++;
+            }
+            else {
+                //If it's not a spring get the available compression
+                natSum += child.naturalH;
+                availCompr += (child.naturalH - child.minH);
+            }
+        }
         return [natSum, availCompr, numSprings];
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -144,6 +171,18 @@ export class Column extends Group {
     // the space at the bottom of the column as a fallback strategy).
     _expandChildSprings(excess, numSprings) {
         //=== YOUR CODE HERE ===
+        //If we have no springs we can't expand anything
+        if (numSprings === 0) {
+            return;
+        }
+        //Calculate amount of space to allocate per each spring
+        var perSpring = excess / numSprings;
+        //For each of the springs set it's new height allocation
+        for (let child of this.children) {
+            if (child instanceof Spring) {
+                child.h = perSpring;
+            }
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // Contract our child objects to make up the given amount of shortfall.  Springs
@@ -160,6 +199,17 @@ export class Column extends Group {
         // from the natural height of that child, to get the assigned height.
         for (let child of this.children) {
             //=== YOUR CODE HERE ===
+            //For each of the children if it's not a spring we want to compress
+            if (child instanceof Spring)
+                continue;
+            else {
+                //Calculate the compressibility of the current child
+                let frac = child.naturalH - child.minH;
+                //Calculate the fraction of total compressibility this child represents
+                frac /= availCompr;
+                //Assign new height to the child
+                child.h = Math.max(child.minH, child.naturalH - (frac * shortfall));
+            }
         }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -198,6 +248,22 @@ export class Column extends Group {
         }
         // apply our justification setting for the horizontal
         //=== YOUR CODE HERE ===
+        //Iterate through each child
+        for (let child of this.children) {
+            //Check justifications 
+            if (this.wJustification === 'center') {
+                //Center the child horizontally within the column
+                child.x = (this.w - child.w) / 2;
+            }
+            else if (this.wJustification === 'right') {
+                // This aligns the child to the right side of the column
+                child.x = this.w - child.w;
+            }
+            else {
+                // This aligns the child to the left side of the column
+                child.x = 0;
+            }
+        }
     }
 }
 //===================================================================

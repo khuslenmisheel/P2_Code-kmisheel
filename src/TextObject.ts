@@ -36,6 +36,7 @@ export class TextObject extends DrawnObjectBase {
     public get text() {return this._text;}
     public set text(v : string) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting variable
         if (!(v === this._text)){
             this.damageAll();
             this._text = v;
@@ -73,6 +74,7 @@ export class TextObject extends DrawnObjectBase {
     public get font() {return this._font;}
     public set font(v : string) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting variable
         if (!(v === this._font)) {
             this.damageAll();
             this._font = v;
@@ -90,6 +92,7 @@ export class TextObject extends DrawnObjectBase {
     public set padding(v : SizeLiteral | number) {
         if (typeof v === 'number') v = {w:v, h:v};
         //=== YOUR CODE HERE ===
+        //Damage before and after setting variable
         if (!(this._padding == v)) {
             this.damageAll();
             this._padding = v;
@@ -122,15 +125,19 @@ export class TextObject extends DrawnObjectBase {
     // Recalculate the size of this object based on the size of the text
     protected _recalcSize(ctx? : DrawContext) : void {
         //=== YOUR CODE HERE ===
+        // Mark the entire object as damaged, triggering a redraw
         this.damageAll();
 
+        // Measure the dimensions of the text using the current font and drawing context
         var met = this._measureText(this._text, this._font, ctx);
 
+        // Update the size of the object to match the measured text dimensions
         this.size = {w : met.w, h: met.h};
 
         // set the size configuration to be fixed at that size
         this.wConfig = SizeConfig.fixed(this.w);
         this.hConfig = SizeConfig.fixed(this.h);
+        // Mark the object as damaged again to ensure it's redrawn with the new size
         this.damageAll();
     }
     
@@ -155,12 +162,16 @@ export class TextObject extends DrawnObjectBase {
             }
             
             //=== YOUR CODE HERE ===
+            // Measure the text to get its metrics (width, height, baseline)
             var metr = this._measureText(this._text, this._font, ctx);
+            // Set the font for the context
             ctx.font = this._font;
             if(this._renderType === 'fill') {
+                // If render type is 'fill', use fillText to draw solid text
                 ctx.fillStyle = clr;
                 ctx.fillText(this._text ,this.padding.w, this.padding.h + metr.baseln, this.maxW);
             } else {
+                // If render type is not 'fill', use strokeText to draw outlined text
                 ctx.strokeStyle = clr;
                 ctx.strokeText(this._text, this.padding.w, this.padding.h + metr.baseln, this.maxW);
             }

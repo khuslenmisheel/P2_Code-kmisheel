@@ -87,6 +87,7 @@ export class IconObject extends DrawnObjectBase {
     public get resizesImage() {return this._resizesImage;}
     public set resizesImage(v : boolean) {
         //=== YOUR CODE HERE ===
+        //Damage before and after setting our resize image variable
         if (!(v === this._resizesImage)) {
             this.damageAll();
             this._resizesImage = v;
@@ -102,6 +103,7 @@ export class IconObject extends DrawnObjectBase {
     // If our size is determined by the image, resize us to match (otherwise do nothing).
     protected _resize() {
         //=== YOUR CODE HERE ===
+        //Resizing image width and height if the variable is true
         if (!(this._resizesImage) && this._image && this._image.canvasImage) {
             var img = this._image.canvasImage;
             this.size = {w: img.width, h: img.height}
@@ -136,9 +138,11 @@ export class IconObject extends DrawnObjectBase {
 
         if (this.resizesImage) {
             //=== YOUR CODE HERE ===
+            //Draw the image with our width and height
             ctx.drawImage(this.image.canvasImage, 0, 0, this.w, this.h);
         } else {
             //=== YOUR CODE HERE ===
+            //Draw image with image width and height
             ctx.drawImage(this.image.canvasImage, 0, 0, this.image.canvasImage.width, this.image.canvasImage.height);
         }
     }

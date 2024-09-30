@@ -102,9 +102,9 @@ export class Column extends Group {
             sumMinsH += child.minH;
             sumNatsH += child.naturalH;
             sumMaxsH += child.maxH;
-            miniW = Math.max(this.minW, child.minW);
-            natyW = Math.max(this.naturalW, child.naturalW);
-            maxyW = Math.max(this.maxW, child.maxW);
+            miniW = Math.max(miniW, child.minW);
+            natyW = Math.max(natyW, child.naturalW);
+            maxyW = Math.max(maxyW, child.maxW);
         }
         this.hConfig = new SizeConfig(sumNatsH, sumMinsH, sumMaxsH);
         this.wConfig = new SizeConfig(natyW, miniW, maxyW);
@@ -172,11 +172,13 @@ export class Column extends Group {
         let availCompr = 0; 
         let numSprings = 0; 
 
-        //=== YOUR CODE HERE ===
+        //Go through each of the children        
         for (let child of this.children) {
+            //For each children if it's a spring just increment
             if (child instanceof Spring) {
                 numSprings++;
             } else {
+                //If it's not a spring get the available compression
                 natSum += child.naturalH;
                 availCompr += (child.naturalH - child.minH);
             }
@@ -193,12 +195,15 @@ export class Column extends Group {
     // the space at the bottom of the column as a fallback strategy).
     protected _expandChildSprings(excess : number, numSprings : number) : void {
         //=== YOUR CODE HERE ===
+        //If we have no springs we can't expand anything
         if(numSprings === 0){
             return;
         }
 
+        //Calculate amount of space to allocate per each spring
         var perSpring = excess / numSprings;
 
+        //For each of the springs set it's new height allocation
         for (let child of this.children) {
             if (child instanceof Spring) {
                 child.h = perSpring;
@@ -225,10 +230,14 @@ export class Column extends Group {
         // from the natural height of that child, to get the assigned height.
         for (let child of this.children) {
             //=== YOUR CODE HERE ===
+            //For each of the children if it's not a spring we want to compress
             if (child instanceof Spring) continue;
             else{
+                //Calculate the compressibility of the current child
                 let frac = child.naturalH - child.minH;
+                //Calculate the fraction of total compressibility this child represents
                 frac /= availCompr;
+                //Assign new height to the child
                 child.h = Math.max(child.minH, child.naturalH - (frac * shortfall));
             }
         }
@@ -275,12 +284,17 @@ export class Column extends Group {
         // apply our justification setting for the horizontal
         
         //=== YOUR CODE HERE ===
+        //Iterate through each child
         for (let child of this.children) {
+            //Check justifications 
             if (this.wJustification === 'center') {
+                //Center the child horizontally within the column
                 child.x = (this.w - child.w) / 2;
             } else if (this.wJustification === 'right') {
+                // This aligns the child to the right side of the column
                 child.x = this.w - child.w;
             } else {
+                // This aligns the child to the left side of the column
                 child.x = 0;
             }
         }

@@ -92,6 +92,7 @@ export class Row extends Group {
     // Our width is set to the width determined by stacking our children horizontally.
     protected override _doLocalSizing() : void {
         //=== YOUR CODE HERE ===max};
+        //Setting variables and going through each child's min, nat, max and adding them up
         var sumMinsW = 0;
         var sumNatsW = 0;
         var sumMaxsW = 0;
@@ -100,16 +101,19 @@ export class Row extends Group {
             sumNatsW += child.naturalW;
             sumMaxsW += child.maxW;
         }
+        //Set our wConfig to calculated width
         this._wConfig = new SizeConfig(sumNatsW, sumMinsW, sumMaxsW);
+        //Starting variables and going through to get the max of each
         var minumH = 0;
         var nattyH = 0
         var maximH = 0;
 
         for (let child of this.children) {
-            minumH = Math.max(this.minH, child.minH);
-            nattyH = Math.max(this.naturalH, child.naturalH);
-            maximH = Math.max(this.maxH, child.maxH);
+            minumH = Math.max(minumH, child.minH);
+            nattyH = Math.max(nattyH, child.naturalH);
+            maximH = Math.max(maximH, child.maxH);
         }
+        //set our hConfig to calculated height
         this._hConfig = new SizeConfig(nattyH, minumH, maximH);
     }
 
@@ -175,10 +179,13 @@ export class Row extends Group {
         let numSprings = 0; 
 
         //=== YOUR CODE HERE ===
+        //Go through each child
         for (let child of this.children) {
+            //If it's a spring add to numSpring
             if (child instanceof Spring) {
                 numSprings++;
             } else {
+                //If not then we want to add to our available compression
                 natSum += child.naturalW;
                 availCompr += (child.naturalW - child.minW);
             }
@@ -199,8 +206,9 @@ export class Row extends Group {
             return;
         }
 
+        //Calculate amount of space to allocate per each spring
         var perSpring = excess / numSprings;
-
+        //For each of the springs set it's new height allocation
         for (let child of this.children) {
             if (child instanceof Spring) {
                 child.w = perSpring;
@@ -228,10 +236,14 @@ export class Row extends Group {
 
         for (let child of this.children) {
             //=== YOUR CODE HERE ===
+            //For each of the children if it's not a spring we want to compress
             if (child instanceof Spring) continue;
             else{
+                //Calculate the compressibility of the current child
                 let frac = child.naturalH - child.minH;
+                //Calculate the fraction of total compressibility this child represents
                 var f = frac / availCompr;
+                //Assign new width to the child
                 child.w = Math.max(child.minW, child.naturalW - (f * shortfall));
             }
         }
@@ -278,12 +290,17 @@ export class Row extends Group {
         // apply our justification setting for the vertical
 
         //=== YOUR CODE HERE ===
+        //Iterate through each child
         for (let child of this.children) {
+            //Check justifications 
             if (this.hJustification === 'bottom') {
+                // This aligns the child to the bottom of the row
                 child.y = this.h - child.h;
             } else if (this.hJustification === 'center') {
+                // This centers the child vertically within the row
                 child.y = (this.h - child.h) /2;
             } else {
+                // This aligns the child to the top of the row
                 child.y = 0;
             }
         }
